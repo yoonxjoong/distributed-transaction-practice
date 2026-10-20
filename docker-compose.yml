@@ -1,0 +1,28 @@
+# 1~2단계용 인프라. 3단계에서 서비스별 DB, 7단계에서 Kafka를 추가한다.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: dt-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: monolith
+      MYSQL_USER: study
+      MYSQL_PASSWORD: study
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.4
+    container_name: dt-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql-data:

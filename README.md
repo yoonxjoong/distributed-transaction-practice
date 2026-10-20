@@ -25,13 +25,36 @@
 
 **주문 흐름:** 주문 요청 → 재고 차감 → 포인트 차감 → 주문 완료. 중간에 하나라도 실패하면 **전체가 없던 일**이 되어야 합니다.
 
-## 기술 스택 (예정)
+## 기술 스택
 
-- Java 17+, Spring Boot 3, Spring Data JPA
-- MySQL (서비스별 DB 분리), Redis (분산 락)
+- Java 21, Spring Boot 4.1, Spring Data JPA, Gradle 멀티 모듈
+- MySQL 8.4 (3단계부터 서비스별 DB 분리), Redis 7.4 (분산 락)
 - Docker Compose
 - Kafka (7단계 Choreography)
-- 테스트: JUnit 5, 동시성 테스트(`ExecutorService`, `CountDownLatch`)
+- 테스트: JUnit 5, Testcontainers, 동시성 테스트(`ExecutorService`, `CountDownLatch`)
+
+## 실행 방법
+
+사전 준비: JDK 21, Docker Desktop 실행
+
+```bash
+# 인프라(MySQL, Redis) 실행
+docker compose up -d
+
+# 애플리케이션 실행 (http://localhost:8080)
+./gradlew :monolith:bootRun
+
+# 테스트 (Testcontainers가 MySQL, Redis를 자동으로 띄우므로 compose 없이도 동작)
+./gradlew test
+
+# 인프라 종료 (-v를 붙이면 DB 데이터까지 삭제)
+docker compose down
+```
+
+| 모듈 | 단계 | 설명 |
+|---|---|---|
+| `monolith` | 1~2 | 하나의 앱, 하나의 DB |
+| `order-service`, `product-service`, `point-service` | 3~7 | 3단계에서 `settings.gradle`에 추가 |
 
 ---
 
